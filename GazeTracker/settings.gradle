@@ -1,0 +1,2 @@
+include ':app', ':gazetracker-release', ':libgaze-release'
+rootProject.name='GazeTracker'
