@@ -4,4 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000"
-    tools:context=".MainActivity" />
+    tools:context=".MainActivity" >
+    <ImageView
+        android:id="@+id/GazePoint"
+        android:layout_width="50px"
+        android:layout_height="50px"
+        android:layout_marginLeft="53px"
+        android:layout_marginTop="100px"
+        android:src="@drawable/circle"
+        />
+</FrameLayout>

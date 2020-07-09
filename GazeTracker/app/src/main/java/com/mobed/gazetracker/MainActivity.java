@@ -1,7 +1,12 @@
 package com.mobed.gazetracker;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -10,6 +15,9 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import java.io.File;
 
@@ -20,20 +28,51 @@ import camp.visual.gazetracker.callback.InitializationCallback;
 import camp.visual.gazetracker.constant.InitializationErrorType;
 import camp.visual.gazetracker.device.GazeDevice;
 
+import static java.lang.Float.NaN;
+
+class MyView extends View {
+    public MyView(Context context) {
+        super(context); // 부모의 인자값이 있는 생성자를 호출한다
+    }
+    private int x=300;
+    private int y=300;
+    private int radius = 50;
+    private String TAG = "MOBED";
+    @Override
+    protected void onDraw(Canvas canvas) { // 화면을 그려주는 작업
+        Log.d(TAG,canvas.getWidth()+" "+canvas.getHeight());
+        Paint paint = new Paint(); // 화면에 그려줄 도구를 셋팅하는 객체
+        paint.setColor(Color.RED); // 색상을 지정
+
+        setBackgroundColor(Color.BLACK); // 배경색을 지정
+        canvas.drawCircle(x, y, radius, paint); // 원의중심 x,y, 반지름,paint
+    }
+
+    public void set_X(int x) {
+        this.x = x;
+    }
+
+    public void set_Y(int y) {
+        this.y = y;
+    }
+}
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MOBED";
-    private int trackingFPS = 1;
+    private int trackingFPS = 10;
     private GazeTracker gazeTracker;
     private static final String[] PERMISSIONS = new String[]
             {Manifest.permission.CAMERA};
     private static final int REQ_PERMISSION = 1000;
-
+    private MyView m;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_main);
+        m = new MyView(MainActivity.this);
+        setContentView(m);
 
-        setContentView(R.layout.activity_main);
         checkPermission();
     }
 
@@ -164,6 +203,16 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onFilteredGaze(long timestamp, float x, float y, int state) {
             Log.i(TAG, "gaze filterd coord (" + x + " x " + y + ")");
+            if(x!=NaN) {
+                int setx, sety;
+                if (x<0) setx=0;
+                else setx = (int) x;
+                if (y<0) sety=0;
+                else sety = (int) y;
+                m.set_X(setx);
+                m.set_Y(sety);
+                m.invalidate();
+            }
         }
     };
 }
